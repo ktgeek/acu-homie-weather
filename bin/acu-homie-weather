@@ -38,7 +38,7 @@ class WeatherPublisher
     "windspdmph_avg2m" => "windspeed-average",
     "windgustmph" => "windgust",
     "windgustdir"=>"windgust-direction"
-  }
+  }.freeze
 
   def initialize(mqtt:, name: nil)
     hostname = name || Socket.gethostname
@@ -48,14 +48,14 @@ class WeatherPublisher
       node.property("updated-at", "Last Updated Time", "datetime")
       node.property("temperature", "Temperature", "float", unit: "ºF")
       node.property("wind-direction", "Wind Direction", "integer", unit: "º")
-      node.property("wind-speed", "Wind Speed", "integer")
+      node.property("wind-speed", "Wind Speed", "integer", unit: "mph")
       node.property("barometric-pressure", "Barometric Pressure", "float", unit:"in")
       node.property("humidity", "Humidity", "integer", unit: "%")
       node.property("dew-point", "Dew Point", "float", unit: "ºF")
       node.property("rain", "Rain", "float", unit: "in")
       node.property("daily-rain", "Rain for the day", "float", unit: "in")
-      node.property("windspeed-average", "Wind speed 2 minute average", "integer")
-      node.property("windgust", "Wind Gusts", "integer")
+      node.property("windspeed-average", "Wind speed 2 minute average", "integer", unit: "mph")
+      node.property("windgust", "Wind Gusts", "integer", unit: "mph")
       node.property("windgust-direction", "Wind Gust Direction", "integer", unit: "º")
     end
     @device.publish
