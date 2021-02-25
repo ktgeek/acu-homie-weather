@@ -5,8 +5,8 @@ Description=Receives data from acuparse's generic API update and publishes it to
 [Service]
 Type=exec
 User=nobody
-Group=nobody
-ExecStart=/srv/acu-homie-weather/bin/ifttt-tap -e production
+Group=nogroup
+ExecStart=/srv/acu-homie-weather/bin/acu-homie-weather
 WorkingDirectory=/srv/acu-homie-weather
 Environment=MQTT_URL=mqtt://your.server.here:1883/
 
