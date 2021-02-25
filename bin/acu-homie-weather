@@ -64,6 +64,7 @@ class WeatherPublisher
   def acuparse_update(data)
     weather_data = data.select { |key, _| ACUPARSE_MAPPING.key?(key)}
     weather_data.transform_keys! { |key| ACUPARSE_MAPPING[key] }
+    weather_data["updated-at"] = DateTime.parse(weather_data["updated-at"]).iso8601 if weather_data["updated-at"]
     @device["weather"].batch_update(weather_data)
   end
 end
