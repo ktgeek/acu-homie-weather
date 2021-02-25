@@ -4,10 +4,7 @@ ENV['BUNDLE_GEMFILE'] ||= File.expand_path('../Gemfile', __dir__)
 
 require 'bundler/setup'
 require 'sinatra/base'
-require 'mqtt/homie/base'
-require 'mqtt/homie/device'
-require 'mqtt/homie/node'
-require 'mqtt/homie/property'
+require 'homie-mqtt'
 
 class WeatherPublisher
   # The data from acuparse looks like this
@@ -51,14 +48,14 @@ class WeatherPublisher
       node.property("updated-at", "Last Updated Time", "datetime")
       node.property("temperature", "Temperature", "float", unit: "ºF")
       node.property("wind-direction", "Wind Direction", "integer", unit: "º")
-      node.property("wind-speed", "Wind Speed", "integer", unit: "mph")
+      node.property("wind-speed", "Wind Speed", "integer")
       node.property("barometric-pressure", "Barometric Pressure", "float", unit:"in")
       node.property("humidity", "Humidity", "integer", unit: "%")
       node.property("dew-point", "Dew Point", "float", unit: "ºF")
       node.property("rain", "Rain", "float", unit: "in")
       node.property("daily-rain", "Rain for the day", "float", unit: "in")
-      node.property("windspeed-average", "Wind speed 2 minute average", "intenger", unit: "mph")
-      node.property("windgust", "Wind Gusts", "integer", unit: "mph")
+      node.property("windspeed-average", "Wind speed 2 minute average", "integer")
+      node.property("windgust", "Wind Gusts", "integer")
       node.property("windgust-direction", "Wind Gust Direction", "integer", unit: "º")
     end
     @device.publish
