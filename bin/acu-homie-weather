@@ -4,6 +4,8 @@ ENV['BUNDLE_GEMFILE'] ||= File.expand_path('../Gemfile', __dir__)
 
 require 'bundler/setup'
 require 'sinatra/base'
+require 'mqtt/homie/base'
+require 'mqtt/homie/device'
 
 class WeatherPublisher
   # The data from acuparse looks like this
@@ -74,7 +76,7 @@ class AcuHomieWeather < Sinatra::Base
   end
 
   def weather_publisher
-    @weather_publisher ||= WeatherPublisher.new(mqtt: $ENV["MQTT_URL"])
+    @weather_publisher ||= WeatherPublisher.new(mqtt: ENV["MQTT_URL"])
   end
 end
 
