@@ -1,0 +1,14 @@
+# Initial install systemctl edit --force --full acu-homie-weather.service
+[Unit]
+Description=Receives data from acuparse's generic API update and publishes it to MQTT following the homie spec
+
+[Service]
+Type=exec
+User=nobody
+Group=nobody
+ExecStart=/srv/acu-homie-weather/bin/ifttt-tap -e production
+WorkingDirectory=/srv/acu-homie-weather
+Environment=MQTT_URL=mqtt://your.server.here:1883/
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,81 @@
+#!/usr/bin/env ruby
+
+ENV['BUNDLE_GEMFILE'] ||= File.expand_path('../Gemfile', __dir__)
+
+require 'bundler/setup'
+require 'sinatra/base'
+
+class WeatherPublisher
+  # The data from acuparse looks like this
+  # { "ID"=>"",
+  #   "amp"=>nil,
+  #   "PASSWORD"=>"",
+  #   "dateutc"=>"2021-02-25 15:01:01",
+  #   "tempf"=>"31.5",
+  #   "winddir"=>"270",
+  #   "windspeedmph"=>"3",
+  #   "baromin"=>"30.38",
+  #   "humidity"=>"84",
+  #   "dewptf"=>"27.1",
+  #   "rainin"=>"0",
+  #   "dailyrainin"=>"0",
+  #   "windspdmph_avg2m"=>"3",
+  #   "windgustmph"=>"5",
+  #   "windgustdir"=>"270",
+  #   "softwaretype"=>"Acuparse",
+  #   "action"=>"updateraw" }
+  ACUPARSE_MAPPING = {
+    "dateutc" => "updated-at",
+    "tempf" => "temperature",
+    "winddir" => "wind-direction",
+    "windspeedmph" => "wind-speed",
+    "baromin" => "barometric-pressure",
+    "humidity" => "humidity",
+    "dewptf" => "dew-point",
+    "rainin" => "rain",
+    "dailyrainin" => "daily-rain",
+    "windspdmph_avg2m" => "windspeed-average",
+    "windgustmph" => "windgust",
+    "windgustdir"=>"windgust-direction"
+  }
+
+  def initialize(mqtt:, name: nil)
+    hostname = name || Socket.gethostname
+    short_name = hostname.split(/\./)[0]
+    @device = MQTT::Homie::Device.new(short_name, hostname, mqtt: mqtt)
+    @device.node("weather", "Weather information", "acuparse") do |node|
+      node.property("updated-at", "Last Updated Time", "datetime")
+      node.property("temperature", "Temperature", "float", unit: "ºF")
+      node.property("wind-direction", "Wind Direction", "integer", unit: "º")
+      node.property("wind-speed", "Wind Speed", "integer", unit: "mph")
+      node.property("barometric-pressure", "Barometric Pressure", "float", unit:"in")
+      node.property("humidity", "Humidity", "integer", unit: "%")
+      node.property("dew-point", "Dew Point", "float", unit: "ºF")
+      node.property("rain", "Rain", "float", unit: "in")
+      node.property("daily-rain", "Rain for the day", "float", unit: "in")
+      node.property("windspeed-average", "Wind speed 2 minute average", "intenger", unit: "mph")
+      node.property("windgust", "Wind Gusts", "integer", unit: "mph")
+      node.property("windgust-direction", "Wind Gust Direction", "integer", unit: "º")
+    end
+    @device.publish
+  end
+
+  def acuparse_update(data)
+    weather_data = data.select { |key, _| ACUPARSE_MAPPING.key?(key)}
+    weather_data.transform_keys! { |key| ACUPARSE_MAPPING[key] }
+    @device["weather"].batch_update(weather_data)
+  end
+end
+
+class AcuHomieWeather < Sinatra::Base
+  get '/weather' do
+    weather_publisher.acuparse_update(params)
+    'OK'
+  end
+
+  def weather_publisher
+    @weather_publisher ||= WeatherPublisher.new(mqtt: $ENV["MQTT_URL"])
+  end
+end
+
+AcuHomieWeather.run!
