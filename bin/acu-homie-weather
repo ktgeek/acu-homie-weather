@@ -81,7 +81,7 @@ class AcuHomieWeather < Sinatra::Base
     'OK'
   end
 
-  def weather_publisher
+  def self.weather_publisher
     @weather_publisher ||= WeatherPublisher.new(mqtt: ENV["MQTT_URL"])
   end
 end
