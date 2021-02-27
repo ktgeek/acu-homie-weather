@@ -77,7 +77,7 @@ end
 
 class AcuHomieWeather < Sinatra::Base
   get '/weather' do
-    weather_publisher.acuparse_update(params)
+    AcuHomieWeather.weather_publisher.acuparse_update(params)
     'OK'
   end
 
