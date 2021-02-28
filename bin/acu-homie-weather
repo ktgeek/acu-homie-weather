@@ -43,20 +43,20 @@ class WeatherPublisher
   def initialize(mqtt:, name: nil)
     hostname = name || Socket.gethostname
     short_name = hostname.split(/\./)[0]
-    @device = MQTT::Homie::Device.new(short_name, hostname, mqtt: mqtt)
+    @device = MQTT::Homie::Device.new(short_name, hostname, mqtt: mqtt, clear_topics: false)
     @device.node("weather", "Weather information", "acuparse") do |node|
       node.property("updated-at", "Last Updated Time", "string")
-      node.property("temperature", "Temperature", "float", unit: "ºF")
-      node.property("wind-direction", "Wind Direction", "integer", unit: "º")
-      node.property("wind-speed", "Wind Speed", "integer", unit: "mph")
-      node.property("barometric-pressure", "Barometric Pressure", "float", unit:"in")
-      node.property("humidity", "Humidity", "integer", unit: "%")
-      node.property("dew-point", "Dew Point", "float", unit: "ºF")
-      node.property("rain", "Rain", "float", unit: "in")
-      node.property("daily-rain", "Rain for the day", "float", unit: "in")
-      node.property("windspeed-average", "Wind speed 2 minute average", "integer", unit: "mph")
-      node.property("windgust", "Wind Gusts", "integer", unit: "mph")
-      node.property("windgust-direction", "Wind Gust Direction", "integer", unit: "º")
+      node.property("temperature", "Temperature", "float", 0.0, unit: "ºF")
+      node.property("wind-direction", "Wind Direction", "integer", 0, unit: "º")
+      node.property("wind-speed", "Wind Speed", "integer", 0, unit: "mph")
+      node.property("barometric-pressure", "Barometric Pressure", "float", 0.0, unit:"in")
+      node.property("humidity", "Humidity", "integer", 0, unit: "%")
+      node.property("dew-point", "Dew Point", "float", 0.0, unit: "ºF")
+      node.property("rain", "Rain", "float", 0.0, unit: "in")
+      node.property("daily-rain", "Rain for the day", "float", 0.0, unit: "in")
+      node.property("windspeed-average", "Wind speed 2 minute average", "integer", 0, unit: "mph")
+      node.property("windgust", "Wind Gusts", "integer", 0, unit: "mph")
+      node.property("windgust-direction", "Wind Gust Direction", "integer", 0, unit: "º")
     end
   end
 
