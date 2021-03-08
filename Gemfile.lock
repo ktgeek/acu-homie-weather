@@ -1,13 +1,13 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    homie-mqtt (1.2.1)
+    homie-mqtt (1.2.2)
       mqtt-ccutrer (~> 1.0)
     mqtt-ccutrer (1.0.0)
     mustermann (1.1.1)
       ruby2_keywords (~> 0.0.1)
-    nio4r (2.5.5)
-    puma (5.2.1)
+    nio4r (2.5.7)
+    puma (5.2.2)
       nio4r (~> 2.0)
     rack (2.2.3)
     rack-protection (2.1.0)
