@@ -39,9 +39,7 @@ class WeatherPublisher
     "windgustmph" => "windgust",
     "windgustdir" => "windgust-direction",
     "feelsF" => "feels-like-temperature",
-    "temptrend" => "temp-trend",
-    "dewptF" => "dew-point",
-    "lastUpdated" => "weather-updated-at"
+    "temptrend" => "temp-trend"
   }.freeze
 
   def initialize(mqtt:, name: nil)
@@ -63,15 +61,13 @@ class WeatherPublisher
       node.property("windgust-direction", "Wind Gust Direction", "integer", 0, unit: "º")
       node.property("feels-like-temperature", "Feels Like Temperature", "float", 0.0, unit: "ºF")
       node.property("temp-trend", "Temperature trend", "string")
-      node.property("dew-point", "Dew point", "float", "0.0", unit: "ºF")
-      node.property("weather-updated-at", "Last weather info was updated", "string")
     end
   end
 
   def acuparse_update(data)
     weather_data = data.select { |key, _| ACUPARSE_MAPPING.key?(key)}
     weather_data.transform_keys! { |key| ACUPARSE_MAPPING[key] }
-    ["updated-at", "weather-updated-at"].each { |field| weather_data[field] = DateTime.parse(weather_data[field]).iso8601 }
+    weather_data['updated-at'] = DateTime.parse(weather_data['updated-at']).iso8601
 
     @device["weather"].batch_update(weather_data)
     ensure_published
